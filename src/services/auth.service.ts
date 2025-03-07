@@ -17,6 +17,7 @@ export const registerUser = async (
 ): Promise<User> => {
   try {
     const newUser = new UserModel({ username, email, password }); 
+    if (await UserModel.findOne({ $or: [{ username }, { email }] })) throw new Error("Username or email already in use");
     await newUser.save();
     return newUser.toUser(); 
   } catch (error) {

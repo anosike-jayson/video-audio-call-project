@@ -19,3 +19,12 @@ export interface RegisterRequestBody {
     user: User;
     token: string;
   }
+
+  export interface Call {
+    _id: string;
+    participants: string[]; 
+    startTime: Date;
+    endTime?: Date;
+    createdAt: Date;
+    updatedAt: Date;
+  }
