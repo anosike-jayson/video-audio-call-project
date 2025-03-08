@@ -1,27 +1,24 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface CallDoc extends Document {
-  participants: mongoose.Types.ObjectId[];
+  participants: string[];
   startTime: Date;
   endTime?: Date; 
+  duration?: number;
   createdAt: Date;
   updatedAt: Date;
-  toCall(): { _id: string; participants: string[]; startTime: Date; endTime?: Date; createdAt: Date; updatedAt: Date };
+  toCall(): { _id: string; participants: string[]; startTime: Date; endTime?: Date; duration?: number, createdAt: Date; updatedAt: Date };
 }
 
 const CallSchema = new Schema<CallDoc>(
   {
-    participants: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: "User" 
-    }],
-
+    participants: [{ type: String }],
     startTime: { 
         type: Date, 
         default: Date.now 
     },
-
     endTime: { type: Date },
+    duration: { type: Number },
   },
   { timestamps: true }
 );
@@ -30,9 +27,10 @@ CallSchema.methods.toCall = function () {
   const obj = this.toObject();
   return {
     _id: obj._id.toString(), 
-    participants: obj.participants.map((id: mongoose.Types.ObjectId) => id.toString()), 
+    participants: obj.participants, 
     startTime: obj.startTime,
     endTime: obj.endTime,
+    duration: obj.duration,
     createdAt: obj.createdAt,
     updatedAt: obj.updatedAt,
   };

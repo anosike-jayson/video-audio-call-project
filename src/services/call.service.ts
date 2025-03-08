@@ -1,11 +1,15 @@
-import mongoose from "mongoose";
 import CallModel from "../models/call.model";
 import { Call } from "../types/auth.types";
+import User from "../models/user.model";
 
 export const startCall = async (userId: string): Promise<Call> => {
   try {
-    const newCall = new CallModel({ participants: [new mongoose.Types.ObjectId(userId)] });
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    const newCall = new CallModel({ participants: [user.username] });
     await newCall.save();
+
     return newCall.toCall();
   } catch (error) {
     throw new Error(`Call creation failed: ${error instanceof Error ? error.message : "Internal server error"}`);
@@ -19,8 +23,11 @@ export const joinCall = async (callId: string, userId: string): Promise<Call> =>
 
     if (call.endTime) throw new Error("Call has already ended");
 
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
     if (!call.participants.some((id) => id.toString() === userId)) {
-      call.participants.push(new mongoose.Types.ObjectId(userId));
+      call.participants.push(user.username);
       await call.save();
     }
 
@@ -35,6 +42,7 @@ export const endCall = async (callId: string, endTime: Date): Promise<Call> => {
     const call = await CallModel.findById(callId);
     if (!call) throw new Error("Call not found");
     call.endTime = endTime;
+    call.duration = Math.round((endTime.getTime() - call.startTime.getTime()) / 1000);
     await call.save();
     return call.toCall();
   } catch (error) {

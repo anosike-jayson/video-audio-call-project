@@ -25,6 +25,7 @@ export interface RegisterRequestBody {
     participants: string[]; 
     startTime: Date;
     endTime?: Date;
+    duration?: number;
     createdAt: Date;
     updatedAt: Date;
   }
