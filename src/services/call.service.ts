@@ -52,7 +52,10 @@ export const endCall = async (callId: string, endTime: Date): Promise<Call> => {
 
 export const getCallHistory = async (userId: string): Promise<Call[]> => {
   try {
-    const calls = await CallModel.find({ participants: userId }).sort({ startTime: -1 });
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    const calls = await CallModel.find({ participants: user.username }).sort({ startTime: -1 });
     return calls.map((call) => call.toCall());
   } catch (error) {
     throw new Error(`Call history retrieval failed: ${error instanceof Error ? error.message : "Internal server error"}`);
