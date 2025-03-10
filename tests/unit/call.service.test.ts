@@ -5,7 +5,6 @@ import { UserDoc } from "../../src/models/user.model";
 describe("Call Service", () => {
   describe("startCall", () => {
     it("should start a call with the authenticated user’s username", async () => {
-      // Arrange
       const user: UserDoc = await User.create({
         username: "testuser",
         email: "test@example.com",
